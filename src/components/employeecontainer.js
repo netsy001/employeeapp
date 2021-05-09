@@ -1,77 +1,85 @@
-import React, { Component } from "react";
-import Container from "./Container";
-import Row from "./Row";
-import Col from "./Col";
-import Card from "./Card";
-import SearchForm from "./SearchForm";
-import employeeDetail from "./employeeDetail";
-import API from "../utils/API";
+import React, {useEffect, useState} from 'react'
+import axios from 'axios'
+import EmployeeDetail from './EmployeeDetail'
 
-class OmdbContainer extends Component {
-  state = {
-    result: {},
-    search: ""
-  };
+function EmployeeContainer(){
+    const [users, setUsers] = useState([])
+    const [search, setSearch] = useState("")
 
-  // When this component mounts, search for the movie "The Matrix"
-  componentDidMount() {
-    this.searchMovies("The Matrix");
-  }
+    useEffect(() => {
+        getRandomUsers()
+    }, [])
 
-  searchMovies = query => {
-    API.search(query)
-      .then(res => this.setState({ result: res.data }))
-      .catch(err => console.log(err));
-  };
+    async function getRandomUsers(){
+        const result = await axios.get('https://randomuser.me/api/?results=30&seed=seed')
+        setUsers(result.data.results)
+    }
 
-  handleInputChange = event => {
-    const value = event.target.value;
-    const name = event.target.name;
-    this.setState({
-      [name]: value
-    });
-  };
+    function getSearchResults(){
+        console.log('Searching for:', search)
+        const searchedUser = users.filter(user => search.indexOf(user.name.first)> -1 || search.indexOf(user.name.last)> -1)
+        console.log(searchedUser)
+        setUsers(searchedUser)
+    }
 
-  // When the form is submitted, search the OMDB API for the value of `this.state.search`
-  handleFormSubmit = event => {
-    event.preventDefault();
-    this.searchMovies(this.state.search);
-  };
+    function clearSearch(){
+        setSearch("")
+        getRandomUsers()
+    }
 
-  render() {
-    return (
-      <Container>
-        <Row>
-          <Col size="md-8">
-            <Card
-              heading={this.state.result.Title || "Search for a Movie to Begin"}
-            >
-              {this.state.result.Title ? (
-                <MovieDetail
-                  title={this.state.result.Title}
-                  src={this.state.result.Poster}
-                  director={this.state.result.Director}
-                  genre={this.state.result.Genre}
-                  released={this.state.result.Released}
-                />
-              ) : (
-                <h3>No Results to Display</h3>
-              )}
-            </Card>
-          </Col>
-          <Col size="md-4">
-            <Card heading="Search">
-              <SearchForm
-                value={this.state.search}
-                handleInputChange={this.handleInputChange}
-                handleFormSubmit={this.handleFormSubmit}
-              />
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
+    function handleInputChange(event){
+        setSearch(event.target.value)
+        console.log(event.target.value)
+    }
+
+    function handleFormSubmit(event){
+        event.preventDefault()
+        getSearchResults()
+    }
+
+    function sortEmail(){
+        console.log('SORTING!!!!')
+        const sorted = users.sort( function(item1, item2){
+            if(item1.email < item2.email){
+                return -1
+            }
+            if (item1.email > item2.email){
+                return 1
+            }
+            return 0
+        })
+        console.log('Sorted List: ', sorted)
+        setUsers([...sorted])
+    }
+
+    function sortNumber(){
+        console.log('SORTING!!!!')
+        const sorted = users.sort( function(item1, item2){
+            if(item1.phone < item2.phone){
+                return -1
+            }
+            if (item1.phone > item2.phone){
+                return 1
+            }
+            return 0
+        })
+        console.log('Sorted List: ', sorted)
+        setUsers([...sorted])
+    }
+
+    return(
+        <div className="container" style={{marginTop: "20px", marginBottom: "20px"}}>
+            {/* search function */}
+            <div className="input-group mb-3 float-center">
+                <input value={search} onChange={handleInputChange} type="text" className="form-control" placeholder="Search Employee by Name" aria-label="Recipient's username" aria-describedby="button-addon2"/>
+                <button className="btn btn-outline-danger" onClick={clearSearch}><i class="fas fa-window-close"></i></button>
+                <button onClick={handleFormSubmit} className="btn btn-outline-primary" type="submit" id="button-addon2">Search</button>
+            </div>
+            <div style={{display: "flex", justifyContent: "center",  margin: "auto", color: "gray"}}>
+            </div>
+            <EmployeeDetail list={users} sortEmail={sortEmail} sortNumber={sortNumber}/>
+        </div>
+    )
 }
 
-export default OmdbContainer;
+export default EmployeeContainer

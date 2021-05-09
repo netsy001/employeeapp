@@ -1,14 +1,33 @@
-import React from "react";
+import React from 'react'
 
-function MovieDetail(props) {
-  return (
-    <div className="text-center">
-      <img alt={props.title} className="img-fluid" src={props.src} style={{ margin: "0 auto" }} />
-      <h3>Director(s): {props.director}</h3>
-      <h3>Genre: {props.genre}</h3>
-      <h3>Released: {props.released}</h3>
-    </div>
-  );
+function EmployeeDetail(props){
+
+    return (
+        <table style={{width: "100%"}}>
+            <thead>
+                <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Phone Number <button className='filter' onClick={props.sortNumber}><i className="fas fa-filter"></i></button></th>
+                <th>Email <button className='filter' onClick={props.sortEmail}><i className="fas fa-filter"></i></button></th>
+                <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {props.list.map(user => 
+                <tr style={{borderTop: "2px solid gray"}}>
+                <td>
+                    <img src={user.picture.thumbnail} alt="profile"/>
+                </td>
+                <td>{user.name.first} {user.name.last}</td>
+                <td>{user.phone}</td>
+                <td>{user.email}</td>
+                <td>{user.location.state}, {user.location.country}</td>
+                </tr>
+                )}
+            </tbody>
+        </table>
+    )
 }
 
-export default MovieDetail;
+export default EmployeeDetail

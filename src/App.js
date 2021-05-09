@@ -1,8 +1,17 @@
-// import React from "react";
-// // import OmdbContainer from "./components/OmdbContainer";
+import React from 'react'
+import Navbar from './components/NavBar'
+import EmployeeContainer from './components/EmployeeContainer'
+import './components/style.css'
 
-// // function App() {
-// //   return <OmdbContainer />;
-// // }
+function App() {
+  
 
-// export default App;
+  return (
+    <div className="App">
+      <Navbar/>
+      <EmployeeContainer/>
+    </div>
+  );
+}
+
+export default App;
